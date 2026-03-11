@@ -2,14 +2,17 @@ import argparse
 import requests
 from bs4 import BeautifulSoup
 import json
+import csv
 import re
 
 
 # -----------------------------
-# Read search term from CLI
+# Command line arguments
 # -----------------------------
 parser = argparse.ArgumentParser()
 parser.add_argument("search_term", help="item to search on ebay")
+parser.add_argument("--csv", action="store_true", help="save output as csv instead of json")
+
 args = parser.parse_args()
 
 search_term = args.search_term
@@ -17,7 +20,7 @@ search_term_url = search_term.replace(" ", "+")
 
 
 # -----------------------------
-# Store results here
+# Store results
 # -----------------------------
 items = []
 
@@ -55,8 +58,7 @@ for page in range(1, 11):
             match = re.search(r"\$([\d\.]+)", text)
 
             if match:
-                dollars = float(match.group(1))
-                price = int(dollars * 100)
+                price = int(float(match.group(1)) * 100)
 
 
         # -----------------------------
@@ -116,14 +118,39 @@ for page in range(1, 11):
             "items_sold": items_sold
         }
 
-
         items.append(item)
 
 
 # -----------------------------
-# Save results to JSON
+# Save output file
 # -----------------------------
-filename = search_term.replace(" ", "_") + ".json"
+filename_base = search_term.replace(" ", "_")
 
-with open(filename, "w") as f:
-    json.dump(items, f, indent=4)
+if args.csv:
+
+    filename = filename_base + ".csv"
+
+    with open(filename, "w", newline="") as f:
+        writer = csv.DictWriter(
+            f,
+            fieldnames=[
+                "name",
+                "price",
+                "status",
+                "shipping",
+                "free_returns",
+                "items_sold"
+            ]
+        )
+
+        writer.writeheader()
+
+        for item in items:
+            writer.writerow(item)
+
+else:
+
+    filename = filename_base + ".json"
+
+    with open(filename, "w") as f:
+        json.dump(items, f, indent=4)
