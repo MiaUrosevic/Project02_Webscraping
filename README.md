@@ -68,4 +68,4 @@ wireless_keyboard.csv
 ## Course Project
 
 This assignment was completed as part of the CSCI040 web scraping project.
-[CSCI40 Project 2 Instructions]https://github.com/mikeizbicki/cmc-csci040/tree/2026spring/project_02_webscraping
+[CSCI40 Project 2 Instructions](https://github.com/mikeizbicki/cmc-csci040/tree/2026spring/project_02_webscraping)
